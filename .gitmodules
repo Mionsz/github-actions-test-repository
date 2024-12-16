@@ -1,0 +1,3 @@
+[submodule "tiber"]
+	path = tiber
+	url = https://github.com/OpenVisualCloud/Intel-Tiber-Broadcast-Suite.git
