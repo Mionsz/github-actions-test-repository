@@ -108,15 +108,24 @@ jobs:
         sudo ls -la /etc/docker/
         sudo cat /etc/docker/daemon.json
     
-    - name: "edit /etc/docker/daemon.json"
+    - name: "install jq"
       run: |
         sudo mkdir -p /mnt/docker/docker-d /mnt/docker/docker-tmp
+        sudo cat /etc/docker/daemon.json
         sudo apt-get update --fix-missing
         sudo apt-get install --no-install-recommends -y jq
-        sudo jq '. += {"data-root":"/mnt/docker/docker-d","log-driver":"json-file","log-format":"text","log-level":"info","log-opts":{"cache-disabled":"false","cache-max-file":"5","cache-max-size":"20m","max-file": "5","max-size":"10m"}}' /etc/docker/daemon.json | sudo tee /etc/docker/daemon.json
-        sudo cat /etc/docker/daemon.json
+
+    - name: "sudo echo jq '.' /etc/docker/daemon.json"
+      run: |
+        sudo echo "$(sudo jq '. += {"data-root":"/mnt/docker/docker-d","log-driver":"json-file","log-format":"text","log-level":"info","log-opts":{"cache-disabled":"false","cache-max-file":"5","cache-max-size":"20m","max-file": "5","max-size":"10m"}}' /etc/docker/daemon.json)" > /etc/docker/daemon.json
+        echo 'sudo daemon reload'
         sudo systemctl daemon-reload
+        echo 'sudo restart docker'
         sudo systemctl restart docker
+        
+    - name: "sudo echo jq '.' /etc/docker/daemon.json"
+      run: |
+        sudo cat /etc/docker/daemon.json
         sudo find . | grep docker
 
     - name: "mount"
