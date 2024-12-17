@@ -117,23 +117,16 @@ jobs:
 
     - name: "sudo echo jq '.' /etc/docker/daemon.json"
       run: |
-        sudo chmod 666 "/etc/docker/daemon.json"
-        sudo jq '. += {"data-root":"/mnt/docker/docker-d","log-driver":"json-file","log-format":"text","log-level":"info","log-opts":{"cache-disabled":"false","cache-max-file":"5","cache-max-size":"20m","max-file":"5","max-size":"10m"}}' "/etc/docker/daemon.json" > "/etc/docker/daemon.json"
-        sudo chmod 644 "/etc/docker/daemon.json"
+        sudo chmod 666 /etc/docker/daemon.json
+        sudo cat /etc/docker/daemon.json
+        sudo jq '. += {"data-root":"/mnt/docker/docker-d","log-driver":"json-file","log-format":"text","log-level":"info","log-opts":{"cache-disabled":"false","cache-max-file":"5","cache-max-size":"20m","max-file":"5","max-size":"10m"}}' /etc/docker/daemon.json > /etc/docker/daemon.json
+        sudo cat /etc/docker/daemon.json
+        sudo chmod 644 /etc/docker/daemon.json
         echo 'sudo daemon reload'
         sudo systemctl daemon-reload
         echo 'sudo restart docker'
         sudo systemctl restart docker
         
-    - name: "sudo echo jq '.' /etc/docker/daemon.json"
-      run: |
-        sudo cat /etc/docker/daemon.json
-        sudo find . | grep docker
-
-    - name: "mount"
-      run: |
-        sudo ln -s /mnt/tmp /var/lib/docker
-
     - name: "Configuration: Docker with Buildx Toolkit set up"
       uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
       with:
