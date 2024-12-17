@@ -117,7 +117,9 @@ jobs:
 
     - name: "sudo echo jq '.' /etc/docker/daemon.json"
       run: |
-        sudo echo "$(sudo jq '. += {"data-root":"/mnt/docker/docker-d","log-driver":"json-file","log-format":"text","log-level":"info","log-opts":{"cache-disabled":"false","cache-max-file":"5","cache-max-size":"20m","max-file": "5","max-size":"10m"}}' /etc/docker/daemon.json)" > /etc/docker/daemon.json
+        sudo chmod 666 "/etc/docker/daemon.json"
+        sudo jq '. += {"data-root":"/mnt/docker/docker-d","log-driver":"json-file","log-format":"text","log-level":"info","log-opts":{"cache-disabled":"false","cache-max-file":"5","cache-max-size":"20m","max-file":"5","max-size":"10m"}}' "/etc/docker/daemon.json" > "/etc/docker/daemon.json"
+        sudo chmod 644 "/etc/docker/daemon.json"
         echo 'sudo daemon reload'
         sudo systemctl daemon-reload
         echo 'sudo restart docker'
