@@ -14,6 +14,7 @@ env:
   DEBIAN_FRONTEND: "noninteractive"
   TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db"
   TRIVY_JAVA_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-java-db"
+  DOCKER_TMPDIR: "/mnt/docker/docker-tmp"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
@@ -101,18 +102,25 @@ jobs:
       run: |
         sudo ls -la ~/.docker
         sudo cat ~/.docker/config.json
-    
-    - name: "ls /etc/docker/"
+
+    - name: "ls /etc/docker/daemon.json"
       run: |
         sudo ls -la /etc/docker/
         sudo cat /etc/docker/daemon.json
+    
+    - name: "edit /etc/docker/daemon.json"
+      run: |
+        sudo mkdir -p /mnt/docker/docker-d /mnt/docker/docker-tmp
+        sudo apt-get update --fix-missing
+        sudo apt-get install --no-install-recommends -y jq
+        sudo jq '. += {"data-root":"/mnt/docker/docker-d","log-driver":"json-file","log-format":"text","log-level":"info","log-opts":{"cache-disabled":"false","cache-max-file":"5","cache-max-size":"20m","max-file": "5","max-size":"10m"}}' /etc/docker/daemon.json | sudo tee /etc/docker/daemon.json
+        sudo cat /etc/docker/daemon.json
         sudo systemctl daemon-reload
-        sudo systenctl restart docker
+        sudo systemctl restart docker
         sudo find . | grep docker
 
     - name: "mount"
       run: |
-        sudo mkdir -p /mnt/tmp
         sudo ln -s /mnt/tmp /var/lib/docker
 
     - name: "Configuration: Docker with Buildx Toolkit set up"
