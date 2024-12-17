@@ -94,6 +94,9 @@ jobs:
 
     - name: "Mount "
       run: |
+        sudo ls -la /root/.docker
+        sudo ls -la ~/.docker
+        sudo ls -la /etc/docker/
         sudo mkdir -p /mnt/tmp
         sudo ln -s /mnt/tmp /var/lib/docker
 
@@ -122,3 +125,4 @@ jobs:
         platforms: "linux/amd64"
         cache-from: type=gha,scope=${{ env.DOCKER_IMAGE_NAME }}
         cache-to: type=gha,mode=max,scope=${{ env.DOCKER_IMAGE_NAME }}
+
