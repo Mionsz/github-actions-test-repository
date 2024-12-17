@@ -92,11 +92,26 @@ jobs:
         sudo lsblk
         sudo df -h
 
-    - name: "Mount "
+    - name: "ls /root/.docker"
       run: |
         sudo ls -la /root/.docker
+        sudo cat /root/.docker/config.json
+    
+    - name: "ls ~/.docker"
+      run: |
         sudo ls -la ~/.docker
+        sudo cat ~/.docker/config.json
+    
+    - name: "ls /etc/docker/"
+      run: |
         sudo ls -la /etc/docker/
+        sudo cat /etc/docker/daemon.json
+        sudo systemctl daemon-reload
+        sudo systenctl restart docker
+        sudo find . | grep docker
+
+    - name: "mount"
+      run: |
         sudo mkdir -p /mnt/tmp
         sudo ln -s /mnt/tmp /var/lib/docker
 
