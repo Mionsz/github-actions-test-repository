@@ -101,26 +101,30 @@ jobs:
         sudo df -h
 
     - name: "ls /root/.docker"
+      continue-on-error: true
       run: |
         sudo ls -la /root/.docker
         sudo cat /root/.docker/config.json
     
     - name: "ls ~/.docker"
+      continue-on-error: true
       run: |
         sudo ls -la ~/.docker
         sudo cat ~/.docker/config.json
 
     - name: "ls /etc/docker/daemon.json"
+      continue-on-error: true
       run: |
         sudo ls -la /etc/docker/
         sudo cat /etc/docker/daemon.json
 
     - name: "sudo echo jq '.' /etc/docker/daemon.json"
+      continue-on-error: true
       run: |
         sudo mkdir -p /mnt/docker/docker-d /mnt/docker/docker-tmp
         sudo chmod 666 /etc/docker/daemon.json
         sudo cat /etc/docker/daemon.json
-        echo "$(sudo jq '. += {"data-root":"/mnt/docker/docker-d","log-driver":"json-file","log-format":"text","log-level":"info","log-opts":{"cache-disabled":"false","cache-max-file":"5","cache-max-size":"20m","max-file":"5","max-size":"10m"}}' /etc/docker/daemon.json)" > /etc/docker/daemon.json
+        echo "$(sudo jq '. += {"data-root":"/mnt/docker/docker-d","log-driver":"json-file","log-format":"text","log-level":"info","log-opts":{"cache-disabled":"false","cache-max-file":"5","cache-max-size":"20m","max-file":"5","max-size":"10m"}}' /etc/docker/daemon.json)" | sudo tee /etc/docker/daemon.json
         sudo cat /etc/docker/daemon.json
         sudo chmod 644 /etc/docker/daemon.json
         echo 'sudo daemon reload'
@@ -136,6 +140,7 @@ jobs:
         driver-opts: memory=14Gib,memory-swap=25Gib,env.BUILDKIT_STEP_LOG_MAX_SIZE=50000000,env.BUILDKIT_STEP_LOG_MAX_SPEED=10000000
 
     - name: "Memory and swap report after"
+      continue-on-error: true
       run: |
         sudo free -h
         sudo df -h
